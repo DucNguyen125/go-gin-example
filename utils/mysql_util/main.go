@@ -11,7 +11,6 @@ import (
 var DB *gorm.DB
 
 func Connect() error {
-	fmt.Printf(os.Getenv("MYSQL_USER"))
 	connectString := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 		os.Getenv("MYSQL_USER"),
 		os.Getenv("MYSQL_PASSWORD"),

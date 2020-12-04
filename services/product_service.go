@@ -3,7 +3,7 @@ package services
 import (
 	"example/models"
 	"example/structs"
-	mysql_util "example/utils"
+	"example/utils/mysql_util"
 	"time"
 )
 
