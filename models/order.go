@@ -1,8 +1,6 @@
 package models
 
-import (
-	"time"
-)
+import "time"
 
 type Order struct {
 	ID          int       `gorm:"primaryKey;column:id"`
