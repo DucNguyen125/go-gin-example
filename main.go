@@ -7,6 +7,7 @@ import (
 	"os"
 	"strconv"
 
+	"example/utils/goth_oauth"
 	"example/utils/mysql_util"
 
 	"example/routers"
@@ -27,6 +28,9 @@ func main() {
 	if err = mysql_util.Connect(); err != nil {
 		log.Fatal("Error connecting to database")
 	}
+
+	// Config goth
+	goth_oauth.Init()
 	// Register Router
 	routersInit := routers.InitRouter()
 
