@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 
+	"example/models"
+
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -21,5 +23,12 @@ func Connect() error {
 		return error
 	}
 	DB = db
+	return nil
+}
+
+func AutoMigrate() error {
+	if err := models.AutoMigrateTable(DB); err != nil {
+		return err
+	}
 	return nil
 }

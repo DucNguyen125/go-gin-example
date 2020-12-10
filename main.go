@@ -29,6 +29,11 @@ func main() {
 		log.Fatal("Error connecting to database")
 	}
 
+	// Migrate database
+	if err = mysql_util.AutoMigrate(); err != nil {
+		log.Fatal("Error migrating to database")
+	}
+
 	// Config goth
 	goth_oauth.Init()
 	// Register Router
