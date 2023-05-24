@@ -6,7 +6,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func InitOAuthRouter(router *gin.RouterGroup) {
+func InitAuthRouter(router gin.IRouter) {
+	router.POST("/register", func(context *gin.Context) {
+		controllers.Register(context)
+	})
+	router.POST("/login", func(context *gin.Context) {
+		controllers.Login(context)
+	})
 	router.GET("/google/login", func(context *gin.Context) {
 		controllers.LoginGoogle(context)
 	})

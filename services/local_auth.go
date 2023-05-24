@@ -2,16 +2,40 @@ package services
 
 import (
 	"example/models"
-	"example/structs"
 	"example/utils/encrypt"
 	"example/utils/mysql"
 	"time"
 )
 
-func Register(body structs.RegisterSchema) (structs.User, error) {
+type RegisterSchema struct {
+	FirstName string `json:"firstName" validate:"required,alpha,min=5,max=128"`
+	LastName  string `json:"lastName" validate:"required,alpha,min=5,max=128"`
+	Email     string `json:"email" validate:"required,email"`
+	Password  string `json:"password" validate:"required,alphanum,min=6,max=128"`
+}
+
+type User struct {
+	Token      string `json:"token"`
+	ID         int    `json:"id"`
+	FirstName  string `json:"firstName"`
+	LastName   string `json:"lastName"`
+	Email      string `json:"email"`
+	FacebookID string `json:"FacebookID"`
+	GoogleID   string `json:"GoogleID"`
+	Avatar     string `json:"avatar"`
+	CreatedAt  string `json:"createdAt"`
+	UpdatedAt  string `json:"updatedAt"`
+}
+
+type LoginSchema struct {
+	Email    string `json:"email" validate:"required,email"`
+	Password string `json:"password" validate:"required,alphanum,min=6,max=128"`
+}
+
+func Register(body RegisterSchema) (User, error) {
 	hashPassword, err := encrypt.HashPassword(body.Password)
 	if err != nil {
-		return structs.User{}, err
+		return User{}, err
 	}
 	newUser := models.User{
 		FirstName: body.FirstName,
@@ -21,10 +45,10 @@ func Register(body structs.RegisterSchema) (structs.User, error) {
 	}
 	err = mysql.DB.Create(&newUser).Error
 	if err != nil {
-		return structs.User{}, err
+		return User{}, err
 	}
 	token := GenerateToken(newUser.ID)
-	createdUser := structs.User{
+	createdUser := User{
 		Token:      token,
 		ID:         newUser.ID,
 		FirstName:  newUser.FirstName,
@@ -39,17 +63,17 @@ func Register(body structs.RegisterSchema) (structs.User, error) {
 	return createdUser, nil
 }
 
-func Login(body structs.LoginSchema) (structs.User, error) {
+func Login(body LoginSchema) (User, error) {
 	user := models.User{}
 	err := mysql.DB.Model(&models.User{}).Where("email = ?", body.Email).First(&user).Error
 	if err != nil {
-		return structs.User{}, err
+		return User{}, err
 	}
 	if err = encrypt.CheckPassword(body.Password, user.Password); err != nil {
-		return structs.User{}, err
+		return User{}, err
 	}
 	token := GenerateToken(user.ID)
-	result := structs.User{
+	result := User{
 		Token:      token,
 		ID:         user.ID,
 		FirstName:  user.FirstName,

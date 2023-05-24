@@ -6,20 +6,20 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func InitProductRouter(router *gin.RouterGroup) {
+func InitOrderRouter(router gin.IRouter) {
 	router.POST("/", func(context *gin.Context) {
-		controllers.CreateProduct(context)
+		controllers.CreateOrder(context)
 	})
 	router.PUT("/:id", func(context *gin.Context) {
-		controllers.UpdateProduct(context)
+		controllers.UpdateOrder(context)
 	})
 	router.GET("/:id", func(context *gin.Context) {
-		controllers.GetProduct(context)
+		controllers.GetOrder(context)
 	})
 	router.GET("", func(context *gin.Context) {
-		controllers.GetListProduct(context)
+		controllers.GetListOrder(context)
 	})
 	router.DELETE("/:id", func(context *gin.Context) {
-		controllers.DeleteProduct(context)
+		controllers.DeleteOrder(context)
 	})
 }
