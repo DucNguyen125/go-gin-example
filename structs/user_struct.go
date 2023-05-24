@@ -6,8 +6,8 @@ type User struct {
 	FirstName  string `json:"firstName"`
 	LastName   string `json:"lastName"`
 	Email      string `json:"email"`
-	FacebookId string `json:"facebookId"`
-	GoogleId   string `json:"googleId"`
+	FacebookID string `json:"FacebookID"`
+	GoogleID   string `json:"GoogleID"`
 	Avatar     string `json:"avatar"`
 	CreatedAt  string `json:"createdAt"`
 	UpdatedAt  string `json:"updatedAt"`

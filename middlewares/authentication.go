@@ -10,7 +10,6 @@ import (
 )
 
 var validate = validator.New()
-var err error
 
 type Header struct {
 	Authorization string `header:"authorization" validate:"required,min=7"`
@@ -18,11 +17,11 @@ type Header struct {
 
 func AuthenticationMiddleware(context *gin.Context) {
 	header := Header{}
-	if err = context.BindHeader(&header); err != nil {
+	if err := context.BindHeader(&header); err != nil {
 		context.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	if err = validate.Struct(header); err != nil {
+	if err := validate.Struct(header); err != nil {
 		context.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Token is invalid"})
 		return
 	}

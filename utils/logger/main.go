@@ -1,7 +1,7 @@
 package logger
 
 import (
-	"io/ioutil"
+	"io"
 	"os"
 
 	log "github.com/sirupsen/logrus"
@@ -19,7 +19,7 @@ func Init() {
 		log.Error(err)
 	}
 	if os.Getenv("RUN_MODE") == "release" {
-		log.SetOutput(ioutil.Discard)
+		log.SetOutput(io.Discard)
 		log.AddHook(&writer.Hook{
 			Writer: errorLogFile,
 			LogLevels: []log.Level{

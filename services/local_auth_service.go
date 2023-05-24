@@ -4,7 +4,7 @@ import (
 	"example/models"
 	"example/structs"
 	"example/utils/encrypt"
-	"example/utils/mysql_util"
+	"example/utils/mysql"
 	"time"
 )
 
@@ -19,7 +19,8 @@ func Register(body structs.RegisterSchema) (structs.User, error) {
 		Email:     body.Email,
 		Password:  hashPassword,
 	}
-	if err := mysql_util.DB.Create(&newUser).Error; err != nil {
+	err = mysql.DB.Create(&newUser).Error
+	if err != nil {
 		return structs.User{}, err
 	}
 	token := GenerateToken(newUser.ID)
@@ -29,8 +30,8 @@ func Register(body structs.RegisterSchema) (structs.User, error) {
 		FirstName:  newUser.FirstName,
 		LastName:   newUser.LastName,
 		Email:      newUser.Email,
-		FacebookId: newUser.FacebookId,
-		GoogleId:   newUser.GoogleId,
+		FacebookID: newUser.FacebookID,
+		GoogleID:   newUser.GoogleID,
 		Avatar:     newUser.Avatar,
 		CreatedAt:  newUser.CreatedAt.Format(time.RFC3339),
 		UpdatedAt:  newUser.UpdatedAt.Format(time.RFC3339),
@@ -40,7 +41,7 @@ func Register(body structs.RegisterSchema) (structs.User, error) {
 
 func Login(body structs.LoginSchema) (structs.User, error) {
 	user := models.User{}
-	err := mysql_util.DB.Model(&models.User{}).Where("email = ?", body.Email).First(&user).Error
+	err := mysql.DB.Model(&models.User{}).Where("email = ?", body.Email).First(&user).Error
 	if err != nil {
 		return structs.User{}, err
 	}
@@ -54,8 +55,8 @@ func Login(body structs.LoginSchema) (structs.User, error) {
 		FirstName:  user.FirstName,
 		LastName:   user.LastName,
 		Email:      user.Email,
-		FacebookId: user.FacebookId,
-		GoogleId:   user.GoogleId,
+		FacebookID: user.FacebookID,
+		GoogleID:   user.GoogleID,
 		Avatar:     user.Avatar,
 		CreatedAt:  user.CreatedAt.Format(time.RFC3339),
 		UpdatedAt:  user.UpdatedAt.Format(time.RFC3339),

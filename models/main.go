@@ -12,8 +12,6 @@ func AutoMigrateTable(db *gorm.DB) error {
 	if err = db.AutoMigrate(&Order{}); err != nil {
 		return err
 	}
-	if err = db.AutoMigrate(&Product{}); err != nil {
-		return err
-	}
-	return nil
+	err = db.AutoMigrate(&Product{})
+	return err
 }
