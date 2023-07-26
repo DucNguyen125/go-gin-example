@@ -11,13 +11,15 @@ import (
 
 func CreateProduct(context *gin.Context) {
 	var body structs.CreateProductSchema
-	err := context.ShouldBindJSON(&body)
-	if err != nil {
+	if err = context.ShouldBindJSON(&body); err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	var result structs.Product
-	result, err = services.CreateProduct(body)
+	if err = validate.Struct(body); err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	result, err := services.CreateProduct(body)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -27,15 +29,16 @@ func CreateProduct(context *gin.Context) {
 
 func UpdateProduct(context *gin.Context) {
 	var body structs.UpdateProductSchema
-	var err error
-	err = context.ShouldBindJSON(&body)
-	if err != nil {
+	if err = context.ShouldBindJSON(&body); err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	var id int
-	id, err = strconv.Atoi(context.Param("id"))
-	if err != nil {
+	if err = validate.Struct(body); err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	id, _ := strconv.Atoi(context.Param("id"))
+	if err = validate.Var(id, "required,number"); err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -45,8 +48,7 @@ func UpdateProduct(context *gin.Context) {
 		ProductName: body.ProductName,
 		Price:       body.Price,
 	}
-	var result structs.Product
-	result, err = services.UpdateProduct(dataUpdate)
+	result, err := services.UpdateProduct(dataUpdate)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -56,6 +58,10 @@ func UpdateProduct(context *gin.Context) {
 
 func GetProduct(context *gin.Context) {
 	id := context.Param("id")
+	if err = validate.Var(id, "required,number"); err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 	result, err := services.GetProduct(id)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -65,22 +71,15 @@ func GetProduct(context *gin.Context) {
 }
 
 func GetListProduct(context *gin.Context) {
-	var err error
-	var page int
-	var limit int
-	page, err = strconv.Atoi(context.Query("page"))
-	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	limit, err = strconv.Atoi(context.Query("limit"))
-	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
+	page, _ := strconv.Atoi(context.Query("page"))
+	limit, _ := strconv.Atoi(context.Query("limit"))
 	option := structs.GetListProductSchema{
 		Page:  page,
 		Limit: limit,
+	}
+	if err = validate.Struct(option); err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 	result := services.GetListProduct(option)
 	context.JSON(http.StatusOK, gin.H{"products": result})
@@ -88,8 +87,11 @@ func GetListProduct(context *gin.Context) {
 
 func DeleteProduct(context *gin.Context) {
 	id := context.Param("id")
-	err := services.DeleteProduct(id)
-	if err != nil {
+	if err = validate.Var(id, "required,number"); err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	if err = services.DeleteOrder(id); err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}

@@ -7,7 +7,7 @@ import (
 	"os"
 	"strconv"
 
-	mysql_util "example/utils"
+	"example/utils/mysql_util"
 
 	"example/routers"
 
@@ -16,20 +16,32 @@ import (
 )
 
 func main() {
-	err := godotenv.Load()
-	if err != nil {
+	var err error
+	if err = godotenv.Load(); err != nil {
 		log.Fatal("Error loading .env file")
 	}
 
 	gin.SetMode(os.Getenv("RUN_MODE"))
-	mysql_util.Connect()
+
+	// Connect to database
+	if err = mysql_util.Connect(); err != nil {
+		log.Fatal("Error connecting to database")
+	}
+	// Register Router
 	routersInit := routers.InitRouter()
-	port, err := strconv.Atoi(os.Getenv("PORT"))
+
+	var port int
+	port, err = strconv.Atoi(os.Getenv("PORT"))
+	if err != nil {
+		log.Fatal("Error get PORT")
+	}
 	endPoint := fmt.Sprintf(":%d", port)
 	server := &http.Server{
 		Addr:    endPoint,
 		Handler: routersInit,
 	}
 	log.Printf("[info] start http server listening %s", endPoint)
-	server.ListenAndServe()
+	if err = server.ListenAndServe(); err != nil {
+		log.Fatal("Fail to start error server")
+	}
 }
