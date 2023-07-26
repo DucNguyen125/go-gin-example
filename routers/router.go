@@ -9,6 +9,8 @@ import (
 
 func InitRouter() *gin.Engine {
 	router := gin.New()
+	router.Use(gin.Logger())
+	router.Use(gin.Recovery())
 
 	v1Router := router.Group("/v1")
 	{
@@ -20,9 +22,10 @@ func InitRouter() *gin.Engine {
 		{
 			v1.InitProductRouter(productPrefix)
 		}
-		localAuthPrefix := v1Router.Group("/auth")
+		authPrefix := v1Router.Group("/auth")
 		{
-			v1.InitLocalAuthRouter(localAuthPrefix)
+			v1.InitLocalAuthRouter(authPrefix)
+			v1.InitOAuthRouter(authPrefix)
 		}
 	}
 
