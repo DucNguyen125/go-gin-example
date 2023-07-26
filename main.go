@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"example/utils/goth_oauth"
+	"example/utils/logger"
 	"example/utils/mysql_util"
 
 	"example/routers"
@@ -23,6 +24,9 @@ func main() {
 	}
 
 	gin.SetMode(os.Getenv("RUN_MODE"))
+
+	// Init logger
+	logger.Init()
 
 	// Connect to database
 	if err = mysql_util.Connect(); err != nil {

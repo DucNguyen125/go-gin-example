@@ -9,7 +9,8 @@ import (
 
 func InitRouter() *gin.Engine {
 	router := gin.New()
-	router.Use(gin.Logger())
+	// router.Use(gin.Logger())
+	router.Use(middlewares.Logger)
 	router.Use(gin.Recovery())
 
 	v1Router := router.Group("/v1")
