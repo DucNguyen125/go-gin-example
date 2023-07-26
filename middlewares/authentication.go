@@ -15,7 +15,7 @@ type Header struct {
 	Authorization string `header:"authorization" validate:"required,min=7"`
 }
 
-func AuthenticationMiddleware(context *gin.Context) {
+func Authentication(context *gin.Context) {
 	header := Header{}
 	if err := context.BindHeader(&header); err != nil {
 		context.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})

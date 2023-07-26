@@ -2,15 +2,14 @@ package controllers
 
 import (
 	"example/services"
-	"example/structs"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
-func CreateProduct(context *gin.Context) {
-	var body structs.CreateProductSchema
+func CreateOrder(context *gin.Context) {
+	var body services.CreateOrderSchema
 	if err := context.ShouldBindJSON(&body); err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -19,16 +18,16 @@ func CreateProduct(context *gin.Context) {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	result, err := services.CreateProduct(body)
+	result, err := services.CreateOrder(body)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	context.JSON(http.StatusOK, gin.H{"product": result})
+	context.JSON(http.StatusOK, gin.H{"order": result})
 }
 
-func UpdateProduct(context *gin.Context) {
-	var body structs.UpdateProductSchema
+func UpdateOrder(context *gin.Context) {
+	var body services.UpdateOrderSchema
 	if err := context.ShouldBindJSON(&body); err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -42,38 +41,41 @@ func UpdateProduct(context *gin.Context) {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	dataUpdate := structs.CreateProductSchema{
+	dataUpdate := services.CreateOrderSchema{
 		ID:          id,
-		ProductCode: body.ProductCode,
-		ProductName: body.ProductName,
-		Price:       body.Price,
+		OrderCode:   body.OrderCode,
+		OrderType:   body.OrderType,
+		Products:    body.Products,
+		OrderStatus: body.OrderStatus,
+		Quantity:    body.Quantity,
+		TotalPrice:  body.TotalPrice,
 	}
-	result, err := services.UpdateProduct(dataUpdate)
+	result, err := services.UpdateOrder(dataUpdate)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	context.JSON(http.StatusOK, gin.H{"product": result})
+	context.JSON(http.StatusOK, gin.H{"order": result})
 }
 
-func GetProduct(context *gin.Context) {
+func GetOrder(context *gin.Context) {
 	id := context.Param("id")
 	if err := validate.Var(id, "required,number"); err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	result, err := services.GetProduct(id)
+	result, err := services.GetOrder(id)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	context.JSON(http.StatusOK, gin.H{"product": result})
+	context.JSON(http.StatusOK, gin.H{"order": result})
 }
 
-func GetListProduct(context *gin.Context) {
+func GetListOrder(context *gin.Context) {
 	page, _ := strconv.Atoi(context.Query("page"))
 	limit, _ := strconv.Atoi(context.Query("limit"))
-	option := structs.GetListProductSchema{
+	option := services.GetListOrderSchema{
 		Page:  page,
 		Limit: limit,
 	}
@@ -81,11 +83,11 @@ func GetListProduct(context *gin.Context) {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	result := services.GetListProduct(option)
-	context.JSON(http.StatusOK, gin.H{"products": result})
+	result := services.GetListOrder(option)
+	context.JSON(http.StatusOK, gin.H{"orders": result})
 }
 
-func DeleteProduct(context *gin.Context) {
+func DeleteOrder(context *gin.Context) {
 	id := context.Param("id")
 	if err := validate.Var(id, "required,number"); err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -95,5 +97,5 @@ func DeleteProduct(context *gin.Context) {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	context.JSON(http.StatusOK, gin.H{"product": "Delete success"})
+	context.JSON(http.StatusOK, gin.H{"order": "Delete success"})
 }

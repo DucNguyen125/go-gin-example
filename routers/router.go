@@ -2,7 +2,8 @@ package routers
 
 import (
 	"example/middlewares"
-	v1 "example/routers/v1"
+	v1Routers "example/routers/v1"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -12,23 +13,12 @@ func InitRouter() *gin.Engine {
 	// router.Use(gin.Logger())
 	router.Use(middlewares.Logger)
 	router.Use(gin.Recovery())
-
-	v1Router := router.Group("/v1")
-	{
-		orderPrefix := v1Router.Group("/order", middlewares.AuthenticationMiddleware)
-		{
-			v1.InitOrderRouter(orderPrefix)
-		}
-		productPrefix := v1Router.Group("/product", middlewares.AuthenticationMiddleware)
-		{
-			v1.InitProductRouter(productPrefix)
-		}
-		authPrefix := v1Router.Group("/auth")
-		{
-			v1.InitLocalAuthRouter(authPrefix)
-			v1.InitOAuthRouter(authPrefix)
-		}
-	}
-
+	apiRouter := router.Group("/api")
+	apiRouter.GET("/ping", func(ctx *gin.Context) {
+		ctx.JSON(http.StatusOK, gin.H{
+			"message": "pong",
+		})
+	})
+	v1Routers.InitV1Router(apiRouter.Group("/v1", middlewares.Authentication))
 	return router
 }

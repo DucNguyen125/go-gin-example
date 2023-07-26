@@ -2,14 +2,13 @@ package controllers
 
 import (
 	"example/services"
-	"example/structs"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
 func Register(context *gin.Context) {
-	var body structs.RegisterSchema
+	var body services.RegisterSchema
 	if err := context.ShouldBindJSON(&body); err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -27,7 +26,7 @@ func Register(context *gin.Context) {
 }
 
 func Login(context *gin.Context) {
-	var body structs.LoginSchema
+	var body services.LoginSchema
 	if err := context.ShouldBindJSON(&body); err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

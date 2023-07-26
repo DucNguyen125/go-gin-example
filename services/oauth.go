@@ -3,7 +3,6 @@ package services
 import (
 	"errors"
 	"example/models"
-	"example/structs"
 	"example/utils/mysql"
 	"time"
 
@@ -12,16 +11,16 @@ import (
 	"gorm.io/gorm"
 )
 
-func LoginGoogleCallback(context *gin.Context) (structs.User, error) {
+func LoginGoogleCallback(context *gin.Context) (User, error) {
 	googleUser, err := gothic.CompleteUserAuth(context.Writer, context.Request)
 	if err != nil {
-		return structs.User{}, err
+		return User{}, err
 	}
 	existUser := models.User{}
 	err = mysql.DB.Model(&models.User{}).Where("email = ?", googleUser.Email).First(&existUser).Error
 	if err == nil {
 		token := GenerateToken(existUser.ID)
-		user := structs.User{
+		user := User{
 			Token:      token,
 			ID:         existUser.ID,
 			FirstName:  existUser.FirstName,
@@ -48,7 +47,7 @@ func LoginGoogleCallback(context *gin.Context) (structs.User, error) {
 		return user, nil
 	}
 	if !errors.Is(err, gorm.ErrRecordNotFound) {
-		return structs.User{}, err
+		return User{}, err
 	}
 	newUser := models.User{
 		FirstName: googleUser.FirstName,
@@ -59,10 +58,10 @@ func LoginGoogleCallback(context *gin.Context) (structs.User, error) {
 	}
 	err = mysql.DB.Create(&newUser).Error
 	if err != nil {
-		return structs.User{}, err
+		return User{}, err
 	}
 	token := GenerateToken(newUser.ID)
-	createdUser := structs.User{
+	createdUser := User{
 		Token:      token,
 		ID:         newUser.ID,
 		FirstName:  newUser.FirstName,
@@ -77,16 +76,16 @@ func LoginGoogleCallback(context *gin.Context) (structs.User, error) {
 	return createdUser, nil
 }
 
-func LoginFacebookCallback(context *gin.Context) (structs.User, error) {
+func LoginFacebookCallback(context *gin.Context) (User, error) {
 	facebookUser, err := gothic.CompleteUserAuth(context.Writer, context.Request)
 	if err != nil {
-		return structs.User{}, err
+		return User{}, err
 	}
 	existUser := models.User{}
 	err = mysql.DB.Model(&models.User{}).Where("facebook_id = ?", facebookUser.UserID).First(&existUser).Error
 	if err == nil {
 		token := GenerateToken(existUser.ID)
-		user := structs.User{
+		user := User{
 			Token:      token,
 			ID:         existUser.ID,
 			FirstName:  existUser.FirstName,
@@ -107,7 +106,7 @@ func LoginFacebookCallback(context *gin.Context) (structs.User, error) {
 		return user, nil
 	}
 	if !errors.Is(err, gorm.ErrRecordNotFound) {
-		return structs.User{}, err
+		return User{}, err
 	}
 	newUser := models.User{
 		FirstName:  facebookUser.FirstName,
@@ -118,10 +117,10 @@ func LoginFacebookCallback(context *gin.Context) (structs.User, error) {
 	}
 	err = mysql.DB.Create(&newUser).Error
 	if err != nil {
-		return structs.User{}, err
+		return User{}, err
 	}
 	token := GenerateToken(newUser.ID)
-	createdUser := structs.User{
+	createdUser := User{
 		Token:      token,
 		ID:         newUser.ID,
 		FirstName:  newUser.FirstName,
