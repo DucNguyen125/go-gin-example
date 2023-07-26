@@ -6,10 +6,11 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"time"
 
-	"example/utils/goth_oauth"
+	"example/utils/goth"
 	"example/utils/logger"
-	"example/utils/mysql_util"
+	"example/utils/mysql"
 
 	"example/routers"
 
@@ -29,17 +30,17 @@ func main() {
 	logger.Init()
 
 	// Connect to database
-	if err = mysql_util.Connect(); err != nil {
+	if err = mysql.Connect(); err != nil {
 		log.Fatal("Error connecting to database")
 	}
 
 	// Migrate database
-	if err = mysql_util.AutoMigrate(); err != nil {
+	if err = mysql.AutoMigrate(); err != nil {
 		log.Fatal("Error migrating to database")
 	}
 
 	// Config goth
-	goth_oauth.Init()
+	goth.Init()
 	// Register Router
 	routersInit := routers.InitRouter()
 
@@ -50,8 +51,9 @@ func main() {
 	}
 	endPoint := fmt.Sprintf(":%d", port)
 	server := &http.Server{
-		Addr:    endPoint,
-		Handler: routersInit,
+		Addr:              endPoint,
+		ReadHeaderTimeout: 3 * time.Second, //nolint:gomnd // common
+		Handler:           routersInit,
 	}
 	log.Printf("[info] start http server listening %s", endPoint)
 	if err = server.ListenAndServe(); err != nil {

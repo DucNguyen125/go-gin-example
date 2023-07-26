@@ -3,7 +3,7 @@ package services
 import (
 	"example/models"
 	"example/structs"
-	"example/utils/mysql_util"
+	"example/utils/mysql"
 	"time"
 )
 
@@ -17,7 +17,7 @@ func CreateOrder(body structs.CreateOrderSchema) (structs.Order, error) {
 		Quantity:    body.Quantity,
 		TotalPrice:  body.TotalPrice,
 	}
-	if err := mysql_util.DB.Create(&newOrder).Error; err != nil {
+	if err := mysql.DB.Create(&newOrder).Error; err != nil {
 		return structs.Order{}, err
 	}
 	createdOrder := structs.Order{
@@ -36,7 +36,7 @@ func CreateOrder(body structs.CreateOrderSchema) (structs.Order, error) {
 
 func UpdateOrder(body structs.CreateOrderSchema) (structs.Order, error) {
 	order := structs.Order{}
-	err := mysql_util.DB.Updates(models.Order{
+	err := mysql.DB.Updates(models.Order{
 		ID:          body.ID,
 		OrderCode:   body.OrderCode,
 		OrderType:   body.OrderType,
@@ -53,7 +53,7 @@ func UpdateOrder(body structs.CreateOrderSchema) (structs.Order, error) {
 
 func GetOrder(id string) (structs.Order, error) {
 	order := structs.Order{}
-	err := mysql_util.DB.Model(&models.Order{}).First(&order, id).Error
+	err := mysql.DB.Model(&models.Order{}).First(&order, id).Error
 	if err != nil {
 		return structs.Order{}, err
 	}
@@ -64,12 +64,12 @@ func GetListOrder(option structs.GetListOrderSchema) []structs.Order {
 	listOrder := []structs.Order{}
 	limit := option.Limit
 	skip := (option.Page - 1) * option.Limit
-	mysql_util.DB.Model(&models.Order{}).Offset(skip).Limit(limit).Find(&listOrder)
+	mysql.DB.Model(&models.Order{}).Offset(skip).Limit(limit).Find(&listOrder)
 	return listOrder
 }
 
 func DeleteOrder(id string) error {
 	order := structs.Order{}
-	err := mysql_util.DB.Model(&models.Order{}).Delete(&order, id).Error
+	err := mysql.DB.Model(&models.Order{}).Delete(&order, id).Error
 	return err
 }

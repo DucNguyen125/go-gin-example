@@ -4,7 +4,7 @@ import (
 	"errors"
 	"example/models"
 	"example/structs"
-	"example/utils/mysql_util"
+	"example/utils/mysql"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -18,7 +18,7 @@ func LoginGoogleCallback(context *gin.Context) (structs.User, error) {
 		return structs.User{}, err
 	}
 	existUser := models.User{}
-	err = mysql_util.DB.Model(&models.User{}).Where("email = ?", googleUser.Email).First(&existUser).Error
+	err = mysql.DB.Model(&models.User{}).Where("email = ?", googleUser.Email).First(&existUser).Error
 	if err == nil {
 		token := GenerateToken(existUser.ID)
 		user := structs.User{
@@ -27,20 +27,20 @@ func LoginGoogleCallback(context *gin.Context) (structs.User, error) {
 			FirstName:  existUser.FirstName,
 			LastName:   existUser.LastName,
 			Email:      existUser.Email,
-			FacebookId: existUser.FacebookId,
-			GoogleId:   googleUser.UserID,
+			FacebookID: existUser.FacebookID,
+			GoogleID:   googleUser.UserID,
 			Avatar:     existUser.Avatar,
 			CreatedAt:  existUser.CreatedAt.Format(time.RFC3339),
 			UpdatedAt:  existUser.UpdatedAt.Format(time.RFC3339),
 		}
-		if existUser.GoogleId == "" {
-			go mysql_util.DB.Updates(models.User{
+		if existUser.GoogleID == "" {
+			go mysql.DB.Updates(models.User{
 				ID:       existUser.ID,
-				GoogleId: googleUser.UserID,
+				GoogleID: googleUser.UserID,
 			})
 		}
 		if existUser.Avatar == "" {
-			go mysql_util.DB.Updates(models.User{
+			go mysql.DB.Updates(models.User{
 				ID:     existUser.ID,
 				Avatar: googleUser.AvatarURL,
 			})
@@ -54,10 +54,11 @@ func LoginGoogleCallback(context *gin.Context) (structs.User, error) {
 		FirstName: googleUser.FirstName,
 		LastName:  googleUser.LastName,
 		Email:     googleUser.Email,
-		GoogleId:  googleUser.UserID,
+		GoogleID:  googleUser.UserID,
 		Avatar:    googleUser.AvatarURL,
 	}
-	if err := mysql_util.DB.Create(&newUser).Error; err != nil {
+	err = mysql.DB.Create(&newUser).Error
+	if err != nil {
 		return structs.User{}, err
 	}
 	token := GenerateToken(newUser.ID)
@@ -67,8 +68,8 @@ func LoginGoogleCallback(context *gin.Context) (structs.User, error) {
 		FirstName:  newUser.FirstName,
 		LastName:   newUser.LastName,
 		Email:      newUser.Email,
-		FacebookId: newUser.FacebookId,
-		GoogleId:   newUser.GoogleId,
+		FacebookID: newUser.FacebookID,
+		GoogleID:   newUser.GoogleID,
 		Avatar:     newUser.Avatar,
 		CreatedAt:  newUser.CreatedAt.Format(time.RFC3339),
 		UpdatedAt:  newUser.UpdatedAt.Format(time.RFC3339),
@@ -82,7 +83,7 @@ func LoginFacebookCallback(context *gin.Context) (structs.User, error) {
 		return structs.User{}, err
 	}
 	existUser := models.User{}
-	err = mysql_util.DB.Model(&models.User{}).Where("facebook_id = ?", facebookUser.UserID).First(&existUser).Error
+	err = mysql.DB.Model(&models.User{}).Where("facebook_id = ?", facebookUser.UserID).First(&existUser).Error
 	if err == nil {
 		token := GenerateToken(existUser.ID)
 		user := structs.User{
@@ -91,14 +92,14 @@ func LoginFacebookCallback(context *gin.Context) (structs.User, error) {
 			FirstName:  existUser.FirstName,
 			LastName:   existUser.LastName,
 			Email:      existUser.Email,
-			FacebookId: existUser.FacebookId,
-			GoogleId:   existUser.GoogleId,
+			FacebookID: existUser.FacebookID,
+			GoogleID:   existUser.GoogleID,
 			Avatar:     existUser.Avatar,
 			CreatedAt:  existUser.CreatedAt.Format(time.RFC3339),
 			UpdatedAt:  existUser.UpdatedAt.Format(time.RFC3339),
 		}
 		if existUser.Avatar == "" {
-			go mysql_util.DB.Updates(models.User{
+			go mysql.DB.Updates(models.User{
 				ID:     existUser.ID,
 				Avatar: facebookUser.AvatarURL,
 			})
@@ -112,10 +113,11 @@ func LoginFacebookCallback(context *gin.Context) (structs.User, error) {
 		FirstName:  facebookUser.FirstName,
 		LastName:   facebookUser.LastName,
 		Email:      facebookUser.Email,
-		FacebookId: facebookUser.UserID,
+		FacebookID: facebookUser.UserID,
 		Avatar:     facebookUser.AvatarURL,
 	}
-	if err := mysql_util.DB.Create(&newUser).Error; err != nil {
+	err = mysql.DB.Create(&newUser).Error
+	if err != nil {
 		return structs.User{}, err
 	}
 	token := GenerateToken(newUser.ID)
@@ -125,8 +127,8 @@ func LoginFacebookCallback(context *gin.Context) (structs.User, error) {
 		FirstName:  newUser.FirstName,
 		LastName:   newUser.LastName,
 		Email:      newUser.Email,
-		FacebookId: newUser.FacebookId,
-		GoogleId:   newUser.GoogleId,
+		FacebookID: newUser.FacebookID,
+		GoogleID:   newUser.GoogleID,
 		Avatar:     newUser.Avatar,
 		CreatedAt:  newUser.CreatedAt.Format(time.RFC3339),
 		UpdatedAt:  newUser.UpdatedAt.Format(time.RFC3339),

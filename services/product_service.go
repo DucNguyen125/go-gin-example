@@ -3,7 +3,7 @@ package services
 import (
 	"example/models"
 	"example/structs"
-	"example/utils/mysql_util"
+	"example/utils/mysql"
 	"time"
 )
 
@@ -14,7 +14,7 @@ func CreateProduct(body structs.CreateProductSchema) (structs.Product, error) {
 		ProductName: body.ProductName,
 		Price:       body.Price,
 	}
-	err := mysql_util.DB.Create(&newProduct)
+	err := mysql.DB.Create(&newProduct)
 	if err.Error != nil {
 		return structs.Product{}, err.Error
 	}
@@ -31,7 +31,7 @@ func CreateProduct(body structs.CreateProductSchema) (structs.Product, error) {
 
 func UpdateProduct(body structs.CreateProductSchema) (structs.Product, error) {
 	product := structs.Product{}
-	err := mysql_util.DB.Updates(models.Product{
+	err := mysql.DB.Updates(models.Product{
 		ID:          body.ID,
 		ProductCode: body.ProductCode,
 		ProductName: body.ProductName,
@@ -45,7 +45,7 @@ func UpdateProduct(body structs.CreateProductSchema) (structs.Product, error) {
 
 func GetProduct(id string) (structs.Product, error) {
 	product := structs.Product{}
-	err := mysql_util.DB.Model(&models.Product{}).First(&product, id).Error
+	err := mysql.DB.Model(&models.Product{}).First(&product, id).Error
 	if err != nil {
 		return structs.Product{}, err
 	}
@@ -56,12 +56,12 @@ func GetListProduct(option structs.GetListProductSchema) []structs.Product {
 	listProduct := []structs.Product{}
 	limit := option.Limit
 	skip := (option.Page - 1) * option.Limit
-	mysql_util.DB.Model(&models.Product{}).Offset(skip).Limit(limit).Find(&listProduct)
+	mysql.DB.Model(&models.Product{}).Offset(skip).Limit(limit).Find(&listProduct)
 	return listProduct
 }
 
 func DeleteProduct(id string) error {
 	product := structs.Product{}
-	err := mysql_util.DB.Model(&models.Product{}).Delete(&product, id).Error
+	err := mysql.DB.Model(&models.Product{}).Delete(&product, id).Error
 	return err
 }

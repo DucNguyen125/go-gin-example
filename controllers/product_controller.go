@@ -11,11 +11,11 @@ import (
 
 func CreateProduct(context *gin.Context) {
 	var body structs.CreateProductSchema
-	if err = context.ShouldBindJSON(&body); err != nil {
+	if err := context.ShouldBindJSON(&body); err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	if err = validate.Struct(body); err != nil {
+	if err := validate.Struct(body); err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -29,16 +29,16 @@ func CreateProduct(context *gin.Context) {
 
 func UpdateProduct(context *gin.Context) {
 	var body structs.UpdateProductSchema
-	if err = context.ShouldBindJSON(&body); err != nil {
+	if err := context.ShouldBindJSON(&body); err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	if err = validate.Struct(body); err != nil {
+	if err := validate.Struct(body); err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	id, _ := strconv.Atoi(context.Param("id"))
-	if err = validate.Var(id, "required,number"); err != nil {
+	if err := validate.Var(id, "required,number"); err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -58,7 +58,7 @@ func UpdateProduct(context *gin.Context) {
 
 func GetProduct(context *gin.Context) {
 	id := context.Param("id")
-	if err = validate.Var(id, "required,number"); err != nil {
+	if err := validate.Var(id, "required,number"); err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -77,7 +77,7 @@ func GetListProduct(context *gin.Context) {
 		Page:  page,
 		Limit: limit,
 	}
-	if err = validate.Struct(option); err != nil {
+	if err := validate.Struct(option); err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -87,11 +87,11 @@ func GetListProduct(context *gin.Context) {
 
 func DeleteProduct(context *gin.Context) {
 	id := context.Param("id")
-	if err = validate.Var(id, "required,number"); err != nil {
+	if err := validate.Var(id, "required,number"); err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	if err = services.DeleteOrder(id); err != nil {
+	if err := services.DeleteOrder(id); err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}

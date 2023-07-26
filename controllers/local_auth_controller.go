@@ -10,11 +10,11 @@ import (
 
 func Register(context *gin.Context) {
 	var body structs.RegisterSchema
-	if err = context.ShouldBindJSON(&body); err != nil {
+	if err := context.ShouldBindJSON(&body); err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	if err = validate.Struct(body); err != nil {
+	if err := validate.Struct(body); err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -28,11 +28,11 @@ func Register(context *gin.Context) {
 
 func Login(context *gin.Context) {
 	var body structs.LoginSchema
-	if err = context.ShouldBindJSON(&body); err != nil {
+	if err := context.ShouldBindJSON(&body); err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	if err = validate.Struct(body); err != nil {
+	if err := validate.Struct(body); err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}

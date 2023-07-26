@@ -1,4 +1,4 @@
-package goth_oauth
+package goth
 
 import (
 	"os"
@@ -12,7 +12,11 @@ import (
 
 func Init() {
 	goth.UseProviders(
-		facebook.New(os.Getenv("FACEBOOK_CLIENT_ID"), os.Getenv("FACEBOOK_SECRET"), os.Getenv("BASE_URL")+"/v1/auth/facebook/callback"),
+		facebook.New(
+			os.Getenv("FACEBOOK_CLIENT_ID"),
+			os.Getenv("FACEBOOK_SECRET"),
+			os.Getenv("BASE_URL")+"/v1/auth/facebook/callback",
+		),
 		google.New(
 			os.Getenv("GOOGLE_CLIENT_ID"),
 			os.Getenv("GOOGLE_SECRET"),

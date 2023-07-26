@@ -14,7 +14,7 @@ func Logger(context *gin.Context) {
 	start := time.Now()
 	context.Next()
 	stop := time.Since(start)
-	latency := int(math.Ceil(float64(stop.Nanoseconds()) / 1000000.0))
+	latency := int(math.Ceil(float64(stop.Nanoseconds()) / 1000000.0)) //nolint:gomnd // common
 	statusCode := context.Writer.Status()
 	clientIP := context.ClientIP()
 	clientUserAgent := context.Request.UserAgent()
@@ -38,11 +38,12 @@ func Logger(context *gin.Context) {
 		logger.Error(context.Errors.ByType(gin.ErrorTypePrivate).String())
 	} else {
 		msg := "[GIN]"
-		if statusCode >= http.StatusInternalServerError {
+		switch {
+		case statusCode >= http.StatusInternalServerError:
 			logger.Error(msg)
-		} else if statusCode >= http.StatusBadRequest {
+		case statusCode >= http.StatusBadRequest:
 			logger.Warn(msg)
-		} else {
+		default:
 			logger.Info(msg)
 		}
 	}

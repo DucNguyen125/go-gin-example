@@ -1,4 +1,4 @@
-package mysql_util
+package mysql
 
 import (
 	"fmt"
@@ -18,17 +18,15 @@ func Connect() error {
 		os.Getenv("MYSQL_PASSWORD"),
 		os.Getenv("MYSQL_URI"),
 		os.Getenv("MYSQL_DATABASE_NAME"))
-	db, error := gorm.Open(mysql.Open(connectString), &gorm.Config{})
-	if error != nil {
-		return error
+	db, err := gorm.Open(mysql.Open(connectString), &gorm.Config{})
+	if err != nil {
+		return err
 	}
 	DB = db
 	return nil
 }
 
 func AutoMigrate() error {
-	if err := models.AutoMigrateTable(DB); err != nil {
-		return err
-	}
-	return nil
+	err := models.AutoMigrateTable(DB)
+	return err
 }
