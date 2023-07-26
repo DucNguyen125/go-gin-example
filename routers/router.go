@@ -19,6 +19,10 @@ func InitRouter() *gin.Engine {
 		{
 			v1.InitProductRouter(productPrefix)
 		}
+		localAuthPrefix := v1Router.Group("/auth")
+		{
+			v1.InitLocalAuthRouter(localAuthPrefix)
+		}
 	}
 
 	return router

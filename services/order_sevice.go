@@ -17,9 +17,8 @@ func CreateOrder(body structs.CreateOrderSchema) (structs.Order, error) {
 		Quantity:    body.Quantity,
 		TotalPrice:  body.TotalPrice,
 	}
-	err := mysql_util.DB.Create(&newOrder)
-	if err.Error != nil {
-		return structs.Order{}, err.Error
+	if err := mysql_util.DB.Create(&newOrder).Error; err != nil {
+		return structs.Order{}, err
 	}
 	createdOrder := structs.Order{
 		ID:          newOrder.ID,
